@@ -1,0 +1,114 @@
+{% extends 'calendarcontrol/base.html' %}
+
+{% block content %}
+{% load static %}
+   <link type="text/css" href="{% static 'css/switch_btn.css' %}" rel="stylesheet" />
+<a href="{% url 'index' %}" type="button" class="btn btn-link">До календарю</a>
+<div class="container">
+    <div class="row">
+        <div class="col-5">
+             {% if object.priority == "1" %}
+            <i class="fas fa-exclamation fa-1x" style="color:red;"></i>
+
+            {% endif %}
+                 <i class="fas fa-envelope-open-text"></i>
+              № {{ object.tlg_number}}
+        </div>
+         <div class="col-3">
+              <i class="fas fa-check-double"></i> Статус телеграми:
+             {% if object.confirm %}
+                виконана!
+                {% else %}
+                    не виконанa!
+                {% endif %}
+        </div>
+        <div class="col-4">
+             <h4> <i class="fas fa-hourglass-half"></i>Виконати до {{ object.date }}</h4>
+        </div>
+    </div><!-- end row div-->
+    <hr>
+
+    <div class="row">
+        <div class="col-6">
+        <label>Короткий опис телеграми</label>
+        <br>
+      {{ object.description }}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-6">
+            {% if object.tlg_scan %}
+                Переглянути телеграму
+                <a href="{% url 'pdf-view' object.pk %}" target="blank" ><i class="far fa-file-pdf fa-2x"></i></a>
+            {% else %}
+            Телеграму не завантажено!
+
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <hr>
+        <div class="row">
+            <div class="col-3">
+                <label>Відмітка про виконання <i class="fas fa-clipboard-check fa-2x" style="color:#2196F3;"></i></label>
+            </div>
+            <div class="col-1">
+
+                <form method="post" action="{% url 'test' object.id %}" id="fff">
+                <label class="switch">
+
+                {% csrf_token %}
+
+                {% if object.confirm %}
+                        <input type="checkbox" name="test1" id="test1" checked>
+                {% else %}
+                        <input type="checkbox" name="test1"  >
+                        {% endif %}
+                        <span class="slider round"></span>
+                    </label>
+
+                </form>
+            </div>
+            <div class="col-3">
+                <a href="{% url 'event-update' object.pk %}" class="btn btn-primary">Редагувати</a>
+                <a href="{% url 'event-delete' object.pk %}" class="btn btn-danger">Видалити</a>
+
+            </div>
+        </div>
+</div>
+
+<script>
+var f=document.getElementById('fff')
+var csrf=document.getElementsByName('csrfmiddlewaretoken')
+
+var r=document.getElementsByName('test1')
+r[0].addEventListener("change", c=>{
+const fd=new FormData()
+fd.append('csrfmiddlewaretoken',csrf[0].value)
+if (r[0].checked == true ){
+fd.append('test1',r[0].value)
+}
+
+ $.ajax({
+    type:'post',
+    url:"{% url 'test' object.id %}",
+    data:fd,
+    cache : false,
+    contentType: false,
+    processData: false,
+    success:function(e){
+    location.reload();
+    }
+
+    })
+})
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'calendarcontrol/base.html' %}
+{% block content %}
+<div class="content-section">
+    <form method="post">
+        {% csrf_token %}
+     <fieldset class="form-group">
+
+        <legend class="border-bottom mb-4">Видалити пост?</legend>
+       <h2>Ви точно бажаєте видалити телеграму № {{ object.tlg_number }}?</h2>
+       <div class="form-group">
+         <button class="btn btn-danger" type="submit">Так, згоден</button>
+         <a type="button" class="btn btn-info" href="{% url 'index' %}">Ні</a>
+       </div>
+    </fieldset>
+
+    </form>
+
+</div>
+
+
+{% endblock%}

@@ -1,0 +1,17 @@
+{% extends 'calendarcontrol/base.html' %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container">
+<a href="{% url 'index' %}" type="button" class="btn btn-link">До календарю</a>
+<form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+        {{ form | crispy }}
+     <button type="submit" class="btn btn-primary">OK</button>
+</form>
+    </div>
+<hr>
+<script>
+    document.getElementById('id_date').type='date'
+</script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'calendarcontrol/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+{% block extra_head %}
+{% load static %}
+    <script  type="text/javascript" src="{% static 'fullcalendar/main.min.js'  %}"></script>
+    <link rel="stylesheet" href="{% static 'fullcalendar/main.min.css' %}" type="text/css" />
+
+{% endblock %}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Додати контроль на вищій штаб</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form action="{% url 'index' %}"  method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {{ form | crispy }}
+<!--                <input type="text" name="report_to_up">-->
+<!--                <input type="text" name="telegram_num">-->
+<!--                <input type="file" name="file_tlg">-->
+<!--                <input type="text" name="description">-->
+         <div id="error"></div>
+         <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відміна</button>
+                <button type="submit" class="btn btn-primary">Додати</button>
+         </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- end Modal -->
+<div class="container">
+<div id="calendar"></div>
+    </div>
+<script>
+    var calendarEl=document.getElementById("calendar")
+
+var calendar = new FullCalendar.Calendar(calendarEl,{
+
+
+   locale: 'uk-ua',
+
+   firstDay:1,
+   selectable: true,
+height: 700,
+ aspectRatio: 2,
+
+   events: [
+   {% for e in title %}
+    {
+          id: '{{ e.id }}',
+      title: `{{ e.unit_to_report }}`,
+      start: '{{ e.date }}',
+      description: `{{ e.description }}`
+    },
+    {% endfor %}
+    ],
+    eventMouseEnter: function(event, jsEvent, view) {
+console.log(event.event.extendedProps.description)
+var container=document.getElementsByClassName('fc-event-title-container')
+Array.from(container).forEach((e)=>{
+e.setAttribute("data-toggle","tooltip")
+e.setAttribute("title",event.event.extendedProps.description)
+
+})
+},
+
+  dateClick:function(event) {
+               console.log(event)
+               var modal = $("#exampleModal");
+               var id_date=document.getElementById('id_date')
+               id_date.value=event.dateStr
+               id_date.readOnly=true
+                modal.modal('show');
+            },
+   eventClick: function(e){
+   console.log(e.event._def.publicId)
+   var id=e.event._def.publicId
+       var url = window.location.origin
+
+
+       window.open(window.location.href+"event/"+parseInt(e.event._def.publicId)+"/","_self")
+   }
+})
+
+
+calendar.render()
+</script>
+{% load static %}
+<script  type="text/javascript" src="{% static 'calendarcontrol/calendar.js'  %}"></script>
+
+
+{% endblock%}
